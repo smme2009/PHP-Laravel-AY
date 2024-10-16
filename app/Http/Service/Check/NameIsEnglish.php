@@ -4,6 +4,7 @@ namespace App\Http\Service\Check;
 
 use App\Contracts\Check as IFCheck;
 
+// 名稱是否為英文
 class NameIsEnglish implements IFCheck
 {
     /**

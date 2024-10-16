@@ -3,18 +3,15 @@
 namespace App\Http\Service;
 
 use App\Contracts\Check as IFCheck;
+use App\Http\Service\Check\NameIsEnglish;
+use App\Http\Service\Check\NameWordFirstIsUpper;
+use App\Http\Service\Check\PriceLimit;
+use App\Http\Service\Check\CurrencyType;
 
 class Order
 {
     // 訊息
     private string $message = '';
-
-    // 檢查欄位列表
-    private array $needCheckFieldList = [
-        'name' => ['NameIsEnglish', 'NameWordFirstIsUpper'],
-        'price' => ['PriceLimit'],
-        'currency' => ['CurrencyType'],
-    ];
 
     /**
      * 轉換資料
@@ -25,19 +22,31 @@ class Order
      */
     public function converData(array $orderData): bool|array
     {
-        // 驗證需驗證資料
-        foreach ($this->needCheckFieldList as $Field => $checkList) {
-            $isPass = $this->checkFiled($orderData[$Field], $checkList);
+        // 驗證名稱是否為英文
+        if ($this->check(new NameIsEnglish, $orderData['name']) === false) {
+            return false;
+        }
 
-            if ($isPass === false) {
-                return false;
-            }
+        // 驗證名稱各字節首字是否為大寫
+        if ($this->check(new NameWordFirstIsUpper, $orderData['name']) === false) {
+            return false;
+        }
+
+        // 驗證幣別
+        if ($this->check(new CurrencyType, $orderData['currency']) === false) {
+            return false;
         }
 
         // 轉換貨幣
+        // 把USD轉為TWD再驗證總額
         if ($orderData['currency'] === 'USD') {
             $orderData['price'] *= 31;
             $orderData['currency'] = 'TWD';
+        }
+
+        // 驗證總額
+        if ($this->check(new PriceLimit, $orderData['price']) === false) {
+            return false;
         }
 
         return $orderData;
@@ -51,28 +60,6 @@ class Order
     public function getMessage(): string
     {
         return $this->message;
-    }
-
-    /**
-     * 驗證欄位
-     * 
-     * @param mixed $value 值
-     * @param array $checkList 驗證列表
-     * 
-     * @return bool 是否通過
-     */
-    private function checkFiled(mixed $value, array $checkList): bool
-    {
-        foreach ($checkList as $name) {
-            $checker = app()->make(__NAMESPACE__ . '\Check\\' . $name);
-            $isPass = $this->check($checker, $value);
-
-            if ($isPass === false) {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     /**

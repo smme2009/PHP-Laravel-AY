@@ -4,6 +4,7 @@ namespace App\Http\Service\Check;
 
 use App\Contracts\Check as IFCheck;
 
+// 總額是否超過
 class PriceLimit implements IFCheck
 {
     /**

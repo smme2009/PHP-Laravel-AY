@@ -4,6 +4,7 @@ namespace App\Http\Service\Check;
 
 use App\Contracts\Check as IFCheck;
 
+// 幣別是否正確
 class CurrencyType implements IFCheck
 {
     // 類型

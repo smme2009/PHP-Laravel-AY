@@ -4,6 +4,7 @@ namespace App\Http\Service\Check;
 
 use App\Contracts\Check as IFCheck;
 
+// 名稱各字節首字是否為大寫
 class NameWordFirstIsUpper implements IFCheck
 {
     /**
