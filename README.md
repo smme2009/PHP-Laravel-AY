@@ -38,3 +38,17 @@ orders 表的資料量應該會最為龐大
 ```SQL
 WHERE created_at BETWEEN '2023-05-01 00:00:00' AND '2023-05-31 23:59:59';
 ```
+
+# API
+
+## 環境安裝
+
+``` bash
+docker-compose up
+```
+
+## 測試
+
+``` bash
+docker-compose exec php82 php artisan test tests/Feature/OrderTest.php   
+```
