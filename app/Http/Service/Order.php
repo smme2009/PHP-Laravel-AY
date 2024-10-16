@@ -2,10 +2,19 @@
 
 namespace App\Http\Service;
 
+use App\Contracts\Check as IFCheck;
+
 class Order
 {
     // 訊息
     private string $message = '';
+
+    // 檢查欄位列表
+    private array $needCheckFieldList = [
+        'name' => ['NameIsEnglish', 'NameWordFirstIsUpper'],
+        'price' => ['PriceLimit'],
+        'currency' => ['CurrencyType'],
+    ];
 
     /**
      * 轉換資料
@@ -16,32 +25,13 @@ class Order
      */
     public function converData(array $orderData): bool|array
     {
-        // 檢查名稱是否為英文
-        $isPass = $this->checkNameIsEnglish($orderData['name']);
-        if ($isPass === false) {
-            $this->message = 'Name contains non-English characters';
-            return false;
-        }
+        // 驗證需驗證資料
+        foreach ($this->needCheckFieldList as $Field => $checkList) {
+            $isPass = $this->checkFiled($orderData[$Field], $checkList);
 
-        // 檢查名稱單字的首字是否為大寫
-        $isPass = $this->checkNameWordFirstIsUpper($orderData['name']);
-        if ($isPass === false) {
-            $this->message = 'Name is not capitalized';
-            return false;
-        }
-
-        // 檢查金額是否超過限制
-        $isPass = $this->checkPriceLimit($orderData['price']);
-        if ($isPass === false) {
-            $this->message = 'Price is over 2000';
-            return false;
-        }
-
-        // 檢查貨幣類型
-        $isPass = $this->checkCurrencyType($orderData['currency']);
-        if ($isPass === false) {
-            $this->message = 'Currency format is wrong';
-            return false;
+            if ($isPass === false) {
+                return false;
+            }
         }
 
         // 轉換貨幣
@@ -60,38 +50,24 @@ class Order
      */
     public function getMessage(): string
     {
-        $message = $this->message;
-
-        return $message;
+        return $this->message;
     }
 
     /**
-     * 檢查名稱是否為英文
+     * 驗證欄位
      * 
-     * @param string $name 名稱
+     * @param mixed $value 值
+     * @param array $checkList 驗證列表
      * 
-     * @return bool 是否通過檢查
+     * @return bool 是否通過
      */
-    private function checkNameIsEnglish(string $name): bool
+    private function checkFiled(mixed $value, array $checkList): bool
     {
-        $isPass = preg_match('/^[a-zA-Z\x20]+$/', $name);
+        foreach ($checkList as $name) {
+            $checker = app()->make(__NAMESPACE__ . '\Check\\' . $name);
+            $isPass = $this->check($checker, $value);
 
-        return $isPass;
-    }
-
-    /**
-     * 檢查名稱單字的首字是否為大寫
-     * 
-     * @param string $name 名稱
-     * 
-     * @return bool 是否通過檢查
-     */
-    private function checkNameWordFirstIsUpper(string $name): bool
-    {
-        $wordList = explode(' ', $name);
-
-        foreach ($wordList as $word) {
-            if (ctype_upper($word[0]) === false) {
+            if ($isPass === false) {
                 return false;
             }
         }
@@ -100,34 +76,20 @@ class Order
     }
 
     /**
-     * 檢查金額是否超過限制
+     * 驗證
      * 
-     * @param int $price 金額
+     * @param IFCheck $checker 驗證器
+     * @param mixed $value 值
      * 
-     * @return bool 是否通過檢查
+     * @return bool 是否通過
      */
-    private function checkPriceLimit(int $price): bool
+    private function check(IFCheck $checker, mixed $value): bool
     {
-        $isPass = ($price <= 2000);
+        $isPass = $checker->check($value);
 
-        return $isPass;
-    }
-
-    /**
-     * 檢查貨幣類型
-     * 
-     * @param string $currency 貨幣類型
-     * 
-     * @return bool 是否通過檢查
-     */
-    private function checkCurrencyType(string $currency): bool
-    {
-        $type = [
-            'TWD',
-            'USD',
-        ];
-
-        $isPass = in_array($currency, $type);
+        if ($isPass === false) {
+            $this->message = $checker->getErrorMessage();
+        }
 
         return $isPass;
     }
