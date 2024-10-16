@@ -1,0 +1,17 @@
+version: '0.1.0'
+services:
+  nginx:
+    image: nginx
+    container_name: nginx
+    ports:
+      - 80:80
+    volumes:
+      - ./docker/nginx-config:/etc/nginx/conf.d
+      - ./:/var/www/html
+  php82:
+    build: { dockerfile: ./docker/dockerfile/php82.dockerfile }
+    container_name: php82
+    working_dir: /var/www/html
+    entrypoint: [ 'sh', './docker/php/init.sh' ]
+    volumes:
+      - ./:/var/www/html
