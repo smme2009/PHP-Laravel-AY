@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Order;
 
 use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Order as ReqOrder;
-use App\Http\Service\Order as SrcOrder;
+use App\Http\Service\Order\Order as SrcOrder;
 
 class Order extends Controller
 {

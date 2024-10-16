@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Service\Check;
+namespace App\Http\Service\Order\Check;
 
 use App\Contracts\Check as IFCheck;
 
-// 名稱各字節首字是否為大寫
-class NameWordFirstIsUpper implements IFCheck
+// 名稱是否為英文
+class NameIsEnglish implements IFCheck
 {
     /**
      * 驗證
@@ -16,15 +16,8 @@ class NameWordFirstIsUpper implements IFCheck
      */
     public function check(mixed $value): bool
     {
-        $wordList = explode(' ', $value);
-
-        foreach ($wordList as $word) {
-            if (ctype_upper($word[0]) === false) {
-                return false;
-            }
-        }
-
-        return true;
+        $isPass = preg_match('/^[a-zA-Z\x20]+$/', $value);
+        return $isPass;
     }
 
     /**
@@ -34,7 +27,7 @@ class NameWordFirstIsUpper implements IFCheck
      */
     public function getErrorMessage(): string
     {
-        $message = 'Name is not capitalized';
+        $message = 'Name contains non-English characters';
         return $message;
     }
 }

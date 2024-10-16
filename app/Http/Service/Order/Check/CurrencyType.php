@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Service\Check;
+namespace App\Http\Service\Order\Check;
 
 use App\Contracts\Check as IFCheck;
 

@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Order;
+use App\Http\Controllers\Order\Order;
 
 /*
 |--------------------------------------------------------------------------

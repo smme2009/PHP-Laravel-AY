@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Service;
+namespace App\Http\Service\Order;
 
 use App\Contracts\Check as IFCheck;
-use App\Http\Service\Check\NameIsEnglish;
-use App\Http\Service\Check\NameWordFirstIsUpper;
-use App\Http\Service\Check\PriceLimit;
-use App\Http\Service\Check\CurrencyType;
+use App\Http\Service\Order\Check\NameIsEnglish;
+use App\Http\Service\Order\Check\NameWordFirstIsUpper;
+use App\Http\Service\Order\Check\PriceLimit;
+use App\Http\Service\Order\Check\CurrencyType;
 
 class Order
 {
