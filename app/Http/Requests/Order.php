@@ -30,7 +30,7 @@ class Order extends FormRequest
             'address.city' => ['required', 'string'],
             'address.district' => ['required', 'string'],
             'address.street' => ['required', 'string'],
-            'price' => ['required', 'int'],
+            'price' => ['required', 'int', 'min:0'],
             'currency' => ['required', 'string'],
         ];
 

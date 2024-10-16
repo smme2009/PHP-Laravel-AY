@@ -43,12 +43,30 @@ WHERE created_at BETWEEN '2023-05-01 00:00:00' AND '2023-05-31 23:59:59';
 
 ## 環境安裝
 
-``` bash
+```bash
 docker-compose up
 ```
 
 ## 測試
 
-``` bash
-docker-compose exec php82 php artisan test tests/Feature/OrderTest.php   
+```bash
+docker-compose exec php82 php artisan test tests/Feature/OrderTest.php
 ```
+
+## 解說
+
+以這個測試為例  
+會明顯有一定重複度的地方  
+是在循序圖的 Loop 部分  
+也就是心智圖上的那些檢查  
+所以可以先把檢查的 [Interface][1] 做出來
+並定義需要的方法  
+然後用這個 Interface  
+實作出所有相關檢查的 [Class][2]  
+這樣在作[檢查][3]時  
+就可以操作抽象的方法  
+並達到簡化部分程式的效果
+
+[1]: ./app/Contracts/Check.php
+[2]: ./app/Http/Service/Order/Check/NameIsEnglish.php
+[3]: ./app/Http/Service/Order/Order.php
